@@ -3,6 +3,7 @@ module github.com/afoninsky/kube-linker
 require (
 	github.com/NYTimes/gziphandler v1.0.1 // indirect
 	github.com/go-openapi/spec v0.19.0
+	github.com/gobuffalo/packr v1.30.1
 	github.com/operator-framework/operator-sdk v0.10.1-0.20190812222044-9542d611c71b
 	github.com/spf13/pflag v1.0.3
 	k8s.io/api v0.0.0-20190612125737-db0771252981

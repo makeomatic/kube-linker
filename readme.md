@@ -1,6 +1,6 @@
 ### Run locally
 export OPERATOR_NAME=kube-linker
-operator-sdk up local --namespace=default
+operator-sdk up local
 
 ### Build
 export IMAGE=...
@@ -15,8 +15,9 @@ operator-sdk test local ./test
 
 ### TODO
 [x] create ingress fetcher proof-of-concept
-[ ] handle valid ingresses: skip by labels, extract description, place to storage
-[ ] create web-server to display ingresses
+[x] handle valid ingresses: skip by labels, extract description, place to storage
+[x] create web-server to display ingresses
+[ ] made nice-looking UI
 [ ] add some tests
 [ ] create deployment
 [ ] deploy to streamlayer
