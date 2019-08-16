@@ -12,11 +12,15 @@ import (
 )
 
 type linkItem struct {
-	URL         string
-	Name        string
-	Image       string
-	Description string
-	DocURL      string
+	// kube-linker/name
+	AnnotatedName string
+	// kube-linker/description
+	AnnotatedDescription string
+	// kube-linker/doc-url
+	AnnotatedURL  string
+	SpecURL       string
+	SpecName      string
+	SpecNamespace string
 }
 
 type webServer struct {
@@ -44,7 +48,8 @@ func createWebServer() *webServer {
 
 func (s *webServer) AddIngress(name string, item *extensionsv1beta1.Ingress) {
 	link := ingressToLink(item)
-	if link.Name == "" {
+	_, enabled := item.Annotations["kube-linker/enabled"]
+	if !enabled {
 		log.Printf("ingress skipped: %s", name)
 		return
 	}
@@ -63,16 +68,17 @@ func (s *webServer) Remove(name string) {
 
 func ingressToLink(ingress *extensionsv1beta1.Ingress) linkItem {
 	link := linkItem{
-		Name:        ingress.Annotations["kube-linker/name"],
-		Description: ingress.Annotations["kube-linker/description"],
-		Image:       ingress.Annotations["kube-linker/image"],
-		DocURL:      ingress.Annotations["kube-linker/doc-url"],
+		AnnotatedName:        ingress.Annotations["kube-linker/name"],
+		AnnotatedDescription: ingress.Annotations["kube-linker/description"],
+		AnnotatedURL:         ingress.Annotations["kube-linker/doc-url"],
+		SpecName:             ingress.Name,
+		SpecNamespace:        ingress.Namespace,
 	}
 
 	if len(ingress.Spec.TLS) == 0 {
-		link.URL = fmt.Sprintf("http://%s", ingress.Spec.Rules[0].Host)
+		link.SpecURL = fmt.Sprintf("http://%s", ingress.Spec.Rules[0].Host)
 	} else {
-		link.URL = fmt.Sprintf("https://%s", ingress.Spec.Rules[0].Host)
+		link.SpecURL = fmt.Sprintf("https://%s", ingress.Spec.Rules[0].Host)
 	}
 
 	return link

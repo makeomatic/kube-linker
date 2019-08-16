@@ -14,19 +14,29 @@
 
     <div class="container">
         {{ range $key, $value := . }}
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="card">
-                    <img src="{{ $value.Image }}" class="card-img-top" alt="{{ $value.Name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $value.Name }}</h5>
-                        <p class="card-text">{{ $value.Description }}</p>
-                        <a href="{{ $value.URL }}" class="card-link">Link</a>
-                        <a href="{{ $value.DocURL }}" class="card-link">Documentation</a>
+        <div class="row justify-content-md-center">
+            <div class="card col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ if $value.AnnotatedName }}{{ $value.AnnotatedName }}{{ else }}{{ $value.SpecName }}{{ end }}
+                    </h5>
+                    <div class="media">
+                        {{ if $value.AnnotatedURL }}
+                        <img src="http://getfavicons.com/api/?url={{ $value.AnnotatedURL }}&size=32" class="mr-3"
+                            alt="...">
+                        {{ end }}
+                        <p class="card-text media-body">
+                            <span class="badge badge-warning">{{ $value.SpecNamespace }}</span>
+                            {{ $value.AnnotatedDescription }}
+                        </p>
                     </div>
+                    <div class="clearfix">&nbsp;</div>
+                    <a href="{{ $value.SpecURL }}" class="btn btn-outline-primary">Service</a>
+                    {{ if $value.AnnotatedURL }}
+                    <a href="{{ $value.AnnotatedURL }}" class="btn btn-outline-secondary">Documentation</a>
+                    {{ end }}
                 </div>
             </div>
-
         </div>
         {{ end }}
     </div>
