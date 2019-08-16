@@ -15,11 +15,14 @@ spec:
       serviceAccountName: kube-linker
       containers:
         - name: kube-linker
-          # Replace this with the built image name
-          image: REPLACE_IMAGE
+          image: vkfont/kube-linker:0.0.1
           command:
           - kube-linker
           imagePullPolicy: Always
+          ports:
+          - containerPort: 9000
+            name: http
+            protocol: TCP
           env:
             - name: WATCH_NAMESPACE
               valueFrom:

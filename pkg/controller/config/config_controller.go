@@ -12,6 +12,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	ws "github.com/afoninsky/kube-linker/pkg/webserver"
 )
 
 // ReconcileConfig reconciles a Config object
@@ -20,7 +22,7 @@ type ReconcileConfig struct {
 	// that reads objects from the cache and writes to the apiserver
 	client client.Client
 	scheme *runtime.Scheme
-	server *webServer
+	server *ws.WebServer
 }
 
 // LinkItem describes link fetched from ingress / virtualservice / etc ...
@@ -36,7 +38,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	return &ReconcileConfig{
 		client: mgr.GetClient(),
 		scheme: mgr.GetScheme(),
-		server: createWebServer(),
+		server: ws.New(),
 	}
 }
 

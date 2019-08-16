@@ -1,3 +1,6 @@
+package webserver
+
+const htmlTemplate = `
 <!doctype html>
 <html lang="en">
 
@@ -33,7 +36,7 @@
                     <div class="clearfix">&nbsp;</div>
                     <a href="{{ $value.SpecURL }}" class="btn btn-outline-primary">Service</a>
                     {{ if $value.AnnotatedURL }}
-                    <a href="{{ $value.AnnotatedURL }}" class="btn btn-outline-secondary">Documentation</a>
+                    <a href="{{ $value.AnnotatedURL }}" class="btn btn-outline-secondary">About</a>
                     {{ end }}
                 </div>
             </div>
@@ -44,3 +47,4 @@
 </body>
 
 </html>
+`

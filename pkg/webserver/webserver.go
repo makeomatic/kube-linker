@@ -1,4 +1,4 @@
-package config
+package webserver
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/gobuffalo/packr"
 	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 )
 
@@ -23,21 +22,15 @@ type linkItem struct {
 	SpecNamespace string
 }
 
-type webServer struct {
+type WebServer struct {
 	sync.RWMutex
 	links map[string]linkItem
 }
 
-func createWebServer() *webServer {
-	ws := &webServer{}
+func New() *WebServer {
+	ws := &WebServer{}
 	ws.links = make(map[string]linkItem)
-
-	box := packr.NewBox("./templates")
-	stringTemplate, err := box.FindString("index.html")
-	if err != nil {
-		panic(err)
-	}
-	tpl := template.Must(template.New("index").Parse(stringTemplate))
+	tpl := template.Must(template.New("index").Parse(htmlTemplate))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tpl.Execute(w, ws.links)
 	})
@@ -46,7 +39,7 @@ func createWebServer() *webServer {
 	return ws
 }
 
-func (s *webServer) AddIngress(name string, item *extensionsv1beta1.Ingress) {
+func (s *WebServer) AddIngress(name string, item *extensionsv1beta1.Ingress) {
 	link := ingressToLink(item)
 	_, enabled := item.Annotations["kube-linker/enabled"]
 	if !enabled {
@@ -59,7 +52,7 @@ func (s *webServer) AddIngress(name string, item *extensionsv1beta1.Ingress) {
 	s.Unlock()
 }
 
-func (s *webServer) Remove(name string) {
+func (s *WebServer) Remove(name string) {
 	log.Printf("ingress removed: %s", name)
 	s.Lock()
 	delete(s.links, name)
