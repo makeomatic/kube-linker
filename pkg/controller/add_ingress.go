@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/afoninsky/kube-linker/pkg/controller/config"
+	config "github.com/afoninsky/kube-linker/pkg/controller/ingress"
 )
 
 func init() {
