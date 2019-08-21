@@ -1,10 +1,10 @@
 package config
 
 import (
-	"context"
+	"log"
 
 	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
-	"k8s.io/apimachinery/pkg/api/errors"
+
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -14,6 +14,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
+	virtualservice "github.com/afoninsky/kube-linker/pkg/apis/networking/v1alpha3"
 	ws "github.com/afoninsky/kube-linker/pkg/webserver"
 )
 
@@ -55,6 +56,11 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
+	// watch for ingresses events
+	if err := c.Watch(&source.Kind{Type: &virtualservice.VirtualService{}}, &handler.EnqueueRequestForObject{}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -65,19 +71,20 @@ var _ reconcile.Reconciler = &ReconcileConfig{}
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result, error) {
+	log.Print(request)
 	// handle ingress event
-	instance := &extensionsv1beta1.Ingress{}
-	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			r.server.Remove(request.NamespacedName.String())
-			return reconcile.Result{}, nil
-		}
-		// error reading the object - requeue the request.
-		return reconcile.Result{}, err
-	}
-	// ingress is either created or updated
-	r.server.AddIngress(request.NamespacedName.String(), instance)
+	// instance := &extensionsv1beta1.Ingress{}
+	// err := r.client.Get(context.TODO(), request.NamespacedName, instance)
+	// if err != nil {
+	// 	if errors.IsNotFound(err) {
+	// 		r.server.Remove(request.NamespacedName.String())
+	// 		return reconcile.Result{}, nil
+	// 	}
+	// 	// error reading the object - requeue the request.
+	// 	return reconcile.Result{}, err
+	// }
+	// // ingress is either created or updated
+	// r.server.AddIngress(request.NamespacedName.String(), instance)
 
 	return reconcile.Result{}, nil
 }
