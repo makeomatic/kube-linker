@@ -3,8 +3,6 @@ package config
 import (
 	"log"
 
-	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
-
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -13,6 +11,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	virtualservice "github.com/afoninsky/kube-linker/pkg/apis/networking/v1alpha3"
 )
 
 // ReconcileConfig reconciles a Config object
@@ -37,14 +37,13 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
 func add(mgr manager.Manager, r reconcile.Reconciler) error {
-	c, err := controller.New("ingress-controller", mgr, controller.Options{Reconciler: r})
+	c, err := controller.New("virtualservice-controller", mgr, controller.Options{Reconciler: r})
 	if err != nil {
 		return err
 	}
 
-	// watch for ingresses events
-	return c.Watch(&source.Kind{Type: &extensionsv1beta1.Ingress{}}, &handler.EnqueueRequestForObject{})
-
+	// watch for virtualservices events
+	return c.Watch(&source.Kind{Type: &virtualservice.VirtualService{}}, &handler.EnqueueRequestForObject{})
 }
 
 // blank assignment to verify that ReconcileConfig implements reconcile.Reconciler

@@ -24,12 +24,6 @@ import (
 	ws "github.com/afoninsky/kube-linker/pkg/webserver"
 )
 
-// Change below variables to serve metrics on different host or port.
-var (
-	metricsHost               = "0.0.0.0"
-	metricsPort         int32 = 8383
-	operatorMetricsPort int32 = 8686
-)
 var log = logf.Log.WithName("cmd")
 
 func printVersion() {
