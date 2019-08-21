@@ -17,7 +17,7 @@ type linkItem struct {
 	AnnotatedDescription string
 	// kube-linker/doc-url
 	AnnotatedURL  string
-	SpecURL       string
+	SpecURL       []string
 	SpecName      string
 	SpecNamespace string
 	SpecEndpoint  string
@@ -73,9 +73,9 @@ func ingressToLink(ingress *extensionsv1beta1.Ingress) linkItem {
 	}
 
 	if len(ingress.Spec.TLS) == 0 {
-		link.SpecURL = fmt.Sprintf("http://%s", ingress.Spec.Rules[0].Host)
+		link.SpecURL = append(link.SpecURL, fmt.Sprintf("http://%s", ingress.Spec.Rules[0].Host))
 	} else {
-		link.SpecURL = fmt.Sprintf("https://%s", ingress.Spec.Rules[0].Host)
+		link.SpecURL = append(link.SpecURL, fmt.Sprintf("https://%s", ingress.Spec.Rules[0].Host))
 	}
 
 	return link

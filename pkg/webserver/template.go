@@ -41,8 +41,10 @@ const htmlTemplate = `
                         </p>
                     </div>
                     <div class="clearfix">&nbsp;</div>
-                    <a href="{{ $value.SpecURL }}"
-                        class="btn btn-link" target="_blank">{{ $value.SpecURL }}</a>
+                    {{ range $url := $value.SpecURL }}
+                    <a href="{{ $url }}"
+                        class="btn btn-link" target="_blank">{{ $url }}</a>
+                    {{ end }}
                 </div>
             </div>
         </div>

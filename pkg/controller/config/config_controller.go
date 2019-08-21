@@ -6,6 +6,7 @@ import (
 	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -48,7 +49,13 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	return c.Watch(&source.Kind{Type: &extensionsv1beta1.Ingress{}}, &handler.EnqueueRequestForObject{})
+
+	// watch for ingresses events
+	if err := c.Watch(&source.Kind{Type: &extensionsv1beta1.Ingress{}}, &handler.EnqueueRequestForObject{}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // blank assignment to verify that ReconcileConfig implements reconcile.Reconciler
@@ -58,10 +65,7 @@ var _ reconcile.Reconciler = &ReconcileConfig{}
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result, error) {
-	// reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
-	// reqLogger.Info("Ingress changed")
-
-	// Fetch ingress
+	// handle ingress event
 	instance := &extensionsv1beta1.Ingress{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
 	if err != nil {
