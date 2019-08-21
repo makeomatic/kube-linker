@@ -29,16 +29,15 @@ type WebServer struct {
 	links map[string]linkItem
 }
 
-func New() *WebServer {
-	ws := &WebServer{}
-	ws.links = make(map[string]linkItem)
+// Start will be executed when operator sdk manager will start
+// when the channel is closed - whole operator will stop running
+func (s *WebServer) Start(channel <-chan struct{}) error {
+	s.links = make(map[string]linkItem)
 	tpl := template.Must(template.New("index").Parse(htmlTemplate))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		tpl.Execute(w, ws.links)
+		tpl.Execute(w, s.links)
 	})
-
-	go http.ListenAndServe(":9000", nil)
-	return ws
+	return http.ListenAndServe(":9000", nil)
 }
 
 func (s *WebServer) AddIngress(name string, item *extensionsv1beta1.Ingress) {

@@ -20,6 +20,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/runtime/signals"
+
+	ws "github.com/afoninsky/kube-linker/pkg/webserver"
 )
 
 // Change below variables to serve metrics on different host or port.
@@ -37,26 +39,11 @@ func printVersion() {
 }
 
 func main() {
-	// Add the zap logger flag set to the CLI. The flag set must
-	// be added before calling pflag.Parse().
 	pflag.CommandLine.AddFlagSet(zap.FlagSet())
-
-	// Add flags registered by imported packages (e.g. glog and
-	// controller-runtime)
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-
 	pflag.Parse()
 
-	// Use a zap logr.Logger implementation. If none of the zap
-	// flags are configured (or if the zap flag set is not being
-	// used), this defaults to a production zap logger.
-	//
-	// The logger instantiated here can be changed to any logger
-	// implementing the logr.Logger interface. This logger will
-	// be propagated through the whole operator, generating
-	// uniform and structured logs.
 	logf.SetLogger(zap.Logger())
-
 	printVersion()
 
 	// Get a config to talk to the apiserver
@@ -68,11 +55,16 @@ func main() {
 
 	// Create a new Cmd to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, manager.Options{
-		Namespace:          "",
-		MapperProvider:     restmapper.NewDynamicRESTMapper,
-		MetricsBindAddress: fmt.Sprintf("%s:%d", metricsHost, metricsPort),
+		LeaderElection: false,
+		MapperProvider: restmapper.NewDynamicRESTMapper,
 	})
 	if err != nil {
+		log.Error(err, "")
+		os.Exit(1)
+	}
+
+	// Add webserver
+	if err := mgr.Add(&ws.WebServer{}); err != nil {
 		log.Error(err, "")
 		os.Exit(1)
 	}
