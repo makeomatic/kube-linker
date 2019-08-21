@@ -20,6 +20,10 @@ const htmlTemplate = `
         <div class="row justify-content-md-center">
             <div class="card col-md-8">
                 <div class="card-body">
+                    <span class="badge badge-info">{{ $value.SpecNamespace }}</span>
+                    <span class="badge badge-primary">{{ $value.SpecName }}</span>
+                    <span class="badge badge-secondary">{{ $value.SpecType }}</span>
+                    <div class="clearfix">&nbsp;</div>
                     <h5 class="card-title">
                         {{ if $value.AnnotatedName }}{{ $value.AnnotatedName }}{{ else }}{{ $value.SpecName }}{{ end }}
                     </h5>
@@ -29,18 +33,20 @@ const htmlTemplate = `
                             alt="...">
                         {{ end }}
                         <p class="card-text media-body">
-                            <span class="badge badge-warning">{{ $value.SpecNamespace }}</span>
                             {{ $value.AnnotatedDescription }}
+                            {{ if $value.AnnotatedURL }}
+                            <a
+                                href="{{ $value.AnnotatedURL }}" target="_blank">...</a>
+                            {{ end }}
                         </p>
                     </div>
                     <div class="clearfix">&nbsp;</div>
-                    <a href="{{ $value.SpecURL }}" class="btn btn-outline-primary">Service</a>
-                    {{ if $value.AnnotatedURL }}
-                    <a href="{{ $value.AnnotatedURL }}" class="btn btn-outline-secondary">About</a>
-                    {{ end }}
+                    <a href="{{ $value.SpecURL }}"
+                        class="btn btn-link" target="_blank">{{ $value.SpecURL }}</a>
                 </div>
             </div>
         </div>
+        <div class="clearfix">&nbsp;</div>
         {{ end }}
     </div>
 

@@ -20,6 +20,8 @@ type linkItem struct {
 	SpecURL       string
 	SpecName      string
 	SpecNamespace string
+	SpecEndpoint  string
+	SpecType      string
 }
 
 type WebServer struct {
@@ -66,6 +68,8 @@ func ingressToLink(ingress *extensionsv1beta1.Ingress) linkItem {
 		AnnotatedURL:         ingress.Annotations["kube-linker/doc-url"],
 		SpecName:             ingress.Name,
 		SpecNamespace:        ingress.Namespace,
+		SpecType:             "ingress",
+		SpecEndpoint:         ingress.Spec.Rules[0].HTTP.Paths[0].Backend.ServiceName,
 	}
 
 	if len(ingress.Spec.TLS) == 0 {
