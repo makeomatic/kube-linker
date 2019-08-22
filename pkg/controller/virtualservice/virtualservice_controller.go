@@ -2,6 +2,7 @@ package virtualservice
 
 import (
 	"context"
+	"fmt"
 
 	virtualservice "github.com/afoninsky/kube-linker/pkg/apis/networking/v1alpha3"
 
@@ -83,6 +84,10 @@ func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result
 }
 
 func virtualserviceToLink(service *virtualservice.VirtualService) web.LinkItem {
+	urls := []string{}
+	for _, url := range service.Spec.Hosts {
+		urls = append(urls, fmt.Sprintf("https://%s", url))
+	}
 	link := web.LinkItem{
 		AnnotatedName:        service.Annotations["kube-linker/name"],
 		AnnotatedDescription: service.Annotations["kube-linker/description"],
@@ -90,13 +95,7 @@ func virtualserviceToLink(service *virtualservice.VirtualService) web.LinkItem {
 		SpecName:             service.Name,
 		SpecNamespace:        service.Namespace,
 		SpecType:             "virtualservice",
-		SpecURL:              service.Spec.Hosts,
+		SpecURL:              urls,
 	}
-	// if len(ingress.Spec.TLS) == 0 {
-	// 	link.SpecURL = append(link.SpecURL, fmt.Sprintf("http://%s", ingress.Spec.Rules[0].Host))
-	// } else {
-	// 	link.SpecURL = append(link.SpecURL, fmt.Sprintf("https://%s", ingress.Spec.Rules[0].Host))
-	// }
-
 	return link
 }
