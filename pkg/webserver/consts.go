@@ -1,4 +1,7 @@
-package webserver
+package web
+
+const port = 9000
+
 
 const htmlTemplate = `
 <!doctype html>
