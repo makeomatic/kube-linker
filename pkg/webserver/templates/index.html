@@ -13,32 +13,37 @@
 <body>
 
     <div class="container">
-        {{ range $key, $value := . }}
         <div class="row justify-content-md-center">
             <div class="card col-md-8">
                 <div class="card-body">
                     <h5 class="card-title">
-                        {{ if $value.AnnotatedName }}{{ $value.AnnotatedName }}{{ else }}{{ $value.SpecName }}{{ end }}
+                        concourse
                     </h5>
                     <div class="media">
-                        {{ if $value.AnnotatedURL }}
-                        <img src="http://getfavicons.com/api/?url={{ $value.AnnotatedURL }}&size=32" class="mr-3"
-                            alt="...">
-                        {{ end }}
+
+                        <img src="http://getfavicons.com/api/?url=https%3a%2f%2fconcourse-ci.org%2f&amp;size=32"
+                            class="mr-3" alt="...">
+
                         <p class="card-text media-body">
-                            <span class="badge badge-warning">{{ $value.SpecNamespace }}</span>
-                            {{ $value.AnnotatedDescription }}
+                            Continious integration system which deploys microfleet services <a
+                                href="https://concourse-ci.org/" target="_blank">...</a>
                         </p>
                     </div>
+                    <span class="badge badge-info">servicename</span>
+                    <span class="badge badge-primary">namespace</span>
+                    <span class="badge badge-secondary">type</span>
                     <div class="clearfix">&nbsp;</div>
-                    <a href="{{ $value.SpecURL }}" class="btn btn-outline-primary">Service</a>
-                    {{ if $value.AnnotatedURL }}
-                    <a href="{{ $value.AnnotatedURL }}" class="btn btn-outline-secondary">About</a>
-                    {{ end }}
+                    <a href="https://concourse.internal.streamlayer.io"
+                        class="btn btn-link">https://concourse.internal.streamlayer.io</a>
+                    <a href="https://concourse.internal.streamlayer.io"
+                        class="btn btn-link">https://concourse.internal.streamlayer.io</a>
+                    <a href="https://concourse.internal.streamlayer.io"
+                        class="btn btn-link">https://concourse.internal.streamlayer.io</a>
+
                 </div>
             </div>
         </div>
-        {{ end }}
+        <div class="clearfix">&nbsp;</div>
     </div>
 
 </body>
