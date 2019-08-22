@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -18,34 +19,41 @@ func (s *Server) Start(channel <-chan struct{}) error {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", s.serverDocHandler).Methods("GET")
-	r.HandleFunc("/api/link/{id}", s.apiCreateLinkHandler).Methods("POST")
-	r.HandleFunc("/api/link/{id}", s.apiDeleteLinkHandler).Methods("DELETE")
+	r.HandleFunc("/", s.apiCreateLinkHandler).Methods("POST")
+	r.HandleFunc("/", s.apiDeleteLinkHandler).Methods("DELETE")
 
-	http.Handle("/", r)
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	return http.ListenAndServe(fmt.Sprintf(":%s", port), r)
 }
 
 func (s *Server) apiCreateLinkHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
 	var link LinkItem
 	_ = json.NewDecoder(r.Body).Decode(&link)
-
+	id := getID(link)
+	log.Println("item updated:", id)
 	s.Lock()
-	s.links[params["id"]] = link
+	s.links[id] = link
 	s.Unlock()
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(link)
 }
 
 func (s *Server) apiDeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+	var link LinkItem
+	_ = json.NewDecoder(r.Body).Decode(&link)
+	id := getID(link)
+	log.Println("item deleted:", id)
 
 	s.Lock()
-	delete(s.links, params["id"])
+	delete(s.links, id)
 	s.Unlock()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&LinkItem{})
+
 }
 
 func (s *Server) serverDocHandler(w http.ResponseWriter, r *http.Request) {
 	s.template.Execute(w, s.links)
+}
+
+func getID(item LinkItem) string {
+	return fmt.Sprintf("%s/%s/%s", item.SpecType, item.SpecNamespace, item.SpecName)
 }

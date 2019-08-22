@@ -1,7 +1,6 @@
 package web
 
-const port = 9000
-
+const port = "9000"
 
 const htmlTemplate = `
 <!doctype html>

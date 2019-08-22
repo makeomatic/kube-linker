@@ -1,4 +1,4 @@
-package config
+package ingress
 
 import (
 	"context"
@@ -60,13 +60,13 @@ var _ reconcile.Reconciler = &ReconcileConfig{}
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result, error) {
-	instance := &extensionsv1beta1.Ingress{}
-	id := fmt.Sprintf("%s/%s", "ingress", request.NamespacedName.String())
-	apiError := r.client.Get(context.TODO(), request.NamespacedName, instance)
+	ingress := &extensionsv1beta1.Ingress{}
+	apiError := r.client.Get(context.TODO(), request.NamespacedName, ingress)
+	link := ingressToLink(ingress)
+
 	if apiError != nil {
 		if errors.IsNotFound(apiError) {
-			// TODO: remove item
-			webError := r.web.Delete(id)
+			webError := r.web.Do("DELETE", link)
 			return reconcile.Result{}, webError
 		}
 		// error reading the object - requeue the request.
@@ -74,12 +74,12 @@ func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result
 	}
 	// ingress is either created or updated
 	// ensure its allowed to display
-	_, enabled := instance.Annotations["kube-linker/enabled"]
+	_, enabled := ingress.Annotations["kube-linker/enabled"]
 	if !enabled {
 		return reconcile.Result{}, nil
 	}
 
-	webError := r.web.Upsert(id, ingressToLink(instance))
+	webError := r.web.Do("POST", link)
 	return reconcile.Result{}, webError
 }
 

@@ -21,7 +21,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/runtime/signals"
 
-	ws "github.com/afoninsky/kube-linker/pkg/webserver"
+	web "github.com/afoninsky/kube-linker/pkg/webserver"
 )
 
 var log = logf.Log.WithName("cmd")
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// Add webserver
-	if err := mgr.Add(&ws.WebServer{}); err != nil {
+	if err := mgr.Add(&web.Server{}); err != nil {
 		log.Error(err, "")
 		os.Exit(1)
 	}

@@ -25,4 +25,6 @@ type Server struct {
 	template *template.Template
 }
 
-type Client struct{}
+type Client struct {
+	baseURL string
+}

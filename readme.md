@@ -12,3 +12,12 @@ docker push $IMAGE
 
 ### Run tests
 operator-sdk test local ./test
+
+### Annotations
+metadata:
+  annotations:
+    kube-linker/enabled: "true"
+    kube-linker/description: Service description
+    kube-linker/doc-url: https://documentation.ling
+    
+    kube-linker/name: optional name
